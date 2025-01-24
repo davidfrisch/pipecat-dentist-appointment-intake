@@ -43,7 +43,7 @@ class IntakeAppointmentTools():
       "type": "function",
       "function": {
         "name": "handle_appointment_time_schedule",
-        "description": "Once the user provides a time of the appointment, call the handle_appointment_time_schedule function.",
+        "description": "Once the user provides a time for the appointment, call the handle_appointment_time_schedule function.",
         "parameters": {
             "type": "object",
             "properties": {
@@ -67,7 +67,7 @@ class IntakeAppointmentTools():
       "type": "function",
       "function": {
         "name": "handle_appointment_confirmation",
-        "description": "When the system asks for confirmation, call the handle_appointment_confirmation function.",
+        "description": "Once the user confirms the appointment, call the handle_appointment_confirmation function.",
         "parameters": {
             "type": "object",
             "properties": {

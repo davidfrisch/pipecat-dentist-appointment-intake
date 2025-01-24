@@ -7,7 +7,7 @@ import os
 from datetime import timedelta, datetime
 
 AVAILABLE_DAYS = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday']
-AVAILABLE_STARTING_HOURS = [9, 10, 11, 13, 14, 15, 16]
+AVAILABLE_STARTING_HOURS = [9, 10, 11, 13, 14, 15, 16, 17, 18]
 
 dir_path = os.path.dirname(os.path.realpath(__file__))
 gc = GoogleCalendar('frischer.london@gmail.com', credentials_path=os.path.join(dir_path, '../../credentials.json'))
@@ -72,6 +72,7 @@ def availability_date_check(check_date: dt.date) -> List[int]:
     if not closest_earliest_hour:
         return []
     
+    available_hours = [hour for hour in available_hours if hour >= closest_earliest_hour[0]]
     time_min = datetime.combine(check_date, dt.time(hour=closest_earliest_hour[0])) 
     time_max = datetime.combine(check_date, dt.time(hour=AVAILABLE_STARTING_HOURS[-1] + 1))  
 
@@ -158,11 +159,12 @@ def find_date_from_day(day: str) -> dt.date:
     :param day: The day to search for.
     :return: The date of the next available day.
     """
-    day_of_the_week_french = ['lundi', 'mardi', 'mercredi', 'jeudi', 'vendredi']
-    day_of_the_week_english = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday']
-    
-    is_in_french = day.lower().strip() in day_of_the_week_french
-    is_in_english = day.lower().strip() in day_of_the_week_english
+    day_of_the_week_french = ['lundi', 'mardi', 'mercredi', 'jeudi', 'vendredi', 'samedi', 'dimanche']
+    day_of_the_week_english = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday']
+    close_days = ['today', 'tomorrow', 'as soon as possible']
+    jour_proche = ['aujourd\'hui', 'demain', 'dès que possible']
+    is_in_french = day.lower().strip() in (day_of_the_week_french  + jour_proche)
+    is_in_english = day.lower().strip() in (day_of_the_week_english + close_days)
     
     if not is_in_french and not is_in_english:
         raise ValueError("The day is not valid.")
@@ -189,6 +191,7 @@ def find_date_from_day(day: str) -> dt.date:
 
 
 if __name__ == "__main__":
-    print(find_date_from_day("tomorrow"))
-      
+    today_date = find_date_from_day("today")
+    next_available_date = availability_date_check(today_date)
+    print(next_available_date)      
     

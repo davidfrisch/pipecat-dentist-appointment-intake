@@ -5,7 +5,7 @@ class IntakeContactDetailsTools():
       "type": "function",
       "function": {
         "name": "handle_first_name",
-        "description": "Use this function to verify the user's first name.",
+        "description": "Once the user gives his first name, call the handle_first_name function.",
         "parameters": {
             "type": "object",
             "properties": {
