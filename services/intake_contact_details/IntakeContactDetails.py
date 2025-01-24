@@ -20,7 +20,6 @@ class IntakeContactDetails:
         )
     
     async def handle_last_name(self, args, context, result_callback):
-        print(f"IntakeProcessor: handle_last_name")
         if "last_name" not in args:
             await result_callback(
                 {

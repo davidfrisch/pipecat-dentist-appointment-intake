@@ -1,11 +1,13 @@
 import datetime as dt
+import sys
+
 from typing import Optional
+from loguru import logger
+
 
 from .tools import IntakeAppointmentTools
 
 from ..google_calendar_api import calendar_utils as gcal
-
-
 
 
 class IntakeAppointmentDetails:
@@ -13,7 +15,6 @@ class IntakeAppointmentDetails:
         pass
       
     async def handle_reason_for_appointment(self, context, result_callback):
-        print(f"IntakeProcessor: handle_reason_for_appointment")
         context.set_tools(
           [IntakeAppointmentTools.handle_appointment_date_schedule]
         )
@@ -76,7 +77,7 @@ class IntakeAppointmentDetails:
               
               
         except Exception as e:
-            print(f"Error: {e}")
+            logger.error(f"Error: {e}")
         
         
         context.set_tools([
@@ -96,7 +97,6 @@ class IntakeAppointmentDetails:
         return None
                 
     async def handle_appointment_time_schedule(self, args, context, result_callback, meeting_date: dt.date = None, meeting_time: Optional[dt.time] = None):
-        print(f"IntakeProcessor: appointment_time_schedule")
         try:
             if not meeting_time:
                 raise ValueError("No time provided")
@@ -124,7 +124,7 @@ class IntakeAppointmentDetails:
             return meeting_time
           
         except Exception as e:
-            print(f"Error: {e}")
+            logger.error(f"Error: {e}")
        
         context.set_tools([
             IntakeAppointmentTools.handle_appointment_date_schedule,
@@ -140,8 +140,6 @@ class IntakeAppointmentDetails:
         return None
   
     async def handle_appointment_confirmation(self, context, result_callback, next_function, confirmation: bool, meeting_details):
-        print(f"IntakeProcessor: ask_for_confirmation")
-        
         if confirmation: 
             context.set_tools(
               [next_function]

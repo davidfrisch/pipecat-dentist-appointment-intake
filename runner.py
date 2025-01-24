@@ -1,9 +1,3 @@
-#
-# Copyright (c) 2024–2025, Daily
-#
-# SPDX-License-Identifier: BSD 2-Clause License
-#
-
 import argparse
 import os
 
@@ -54,8 +48,6 @@ async def configure_with_args(
         aiohttp_session=aiohttp_session,
     )
 
-    # Create a meeting token for the given room with an expiration 1 hour in
-    # the future.
     expiry_time: float = 60 * 60
 
     token = await daily_rest_helper.get_token(url, expiry_time)

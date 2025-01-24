@@ -3,7 +3,6 @@
 import asyncio
 import os
 import sys
-import wave
 
 import aiohttp
 from dotenv import load_dotenv
@@ -11,22 +10,20 @@ from loguru import logger
 from runner import configure
 from services.IntakeProcessor import IntakeProcessor
 
-from pipecat.audio.vad.silero import SileroVADAnalyzer
-from pipecat.frames.frames import OutputAudioRawFrame
 from pipecat.pipeline.pipeline import Pipeline
 from pipecat.pipeline.runner import PipelineRunner
 from pipecat.pipeline.task import PipelineParams, PipelineTask
-from pipecat.processors.frame_processor import FrameDirection
-from pipecat.processors.logger import FrameLogger
-from pipecat.services.azure import AzureTTSService, AzureSTTService, Language
-from pipecat.processors.filters.function_filter import FunctionFilter
 from pipecat.pipeline.parallel_pipeline import ParallelPipeline
-
-
+from pipecat.services.azure import AzureTTSService, AzureSTTService, Language
 from pipecat.services.openai import OpenAILLMContext, OpenAILLMContextFrame, OpenAILLMService
+from pipecat.processors.logger import FrameLogger
+from pipecat.processors.filters.function_filter import FunctionFilter
 from pipecat.transports.services.daily import DailyParams, DailyTransport
+from pipecat.audio.vad.silero import SileroVADAnalyzer
 
 load_dotenv(override=True)
+
+logger.remove(0)
 logger.add(sys.stderr, level="DEBUG")
 
 
@@ -93,20 +90,20 @@ async def main(current_language="english"):
         
         pipeline = Pipeline(
             [
-                transport.input(),  # Transport input
+                transport.input(), 
                 ParallelPipeline(  # STT (bot will listen in the chosen language)
-                    [FunctionFilter(intake.english_filter), english_sst],  # English
-                    [FunctionFilter(intake.french_filter), french_sst],  # Spanish
+                    [FunctionFilter(intake.english_filter), english_sst],
+                    [FunctionFilter(intake.french_filter), french_sst],  
                 ),
-                context_aggregator.user(),  # User responses
-                llm,  # LLM
-                fl,  # Frame logger
+                context_aggregator.user(), 
+                llm, 
+                # fl, 
                 ParallelPipeline(  # TTS (bot will speak the chosen language)
                     [FunctionFilter(intake.english_filter), english_tts], 
                     [FunctionFilter(intake.french_filter), french_tts],  
                 ),
-                transport.output(),  # Transport output
-                context_aggregator.assistant(),  # Assistant responses
+                transport.output(),  
+                context_aggregator.assistant(),  
             ]
         )
 
@@ -116,7 +113,6 @@ async def main(current_language="english"):
         async def on_first_participant_joined(transport, participant):
             await transport.capture_participant_transcription(participant["id"])
             
-            print(f"Context is: {context}")
             await task.queue_frames([OpenAILLMContextFrame(context)])
 
         runner = PipelineRunner()

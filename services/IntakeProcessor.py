@@ -21,10 +21,6 @@ from .intake_appointment_details.IntakeAppointmentDetails import IntakeAppointme
 from loguru import logger
 load_dotenv(override=True)
 
-logger.remove(0)
-logger.add(sys.stderr, level="DEBUG")
-
-
 
 class MeetingDetailsForm(BaseModel):
     """
@@ -49,7 +45,6 @@ class IntakeProcessor:
         self.intake_contact_details = IntakeContactDetails()
         self.intake_appointment_details = IntakeAppointmentDetails()
         context.set_tool_choice
-        print(f"Initializing context from IntakeProcessor")
         context.add_message(
             {
                 "role": "system",
@@ -115,7 +110,6 @@ class IntakeProcessor:
         
     async def handle_switch_language(self, function_name, tool_call_id, args, llm, context, result_callback):
         language = args["language"]
-        print(f"language: {language}")
         
         if language not in ["english", "french"]:
             await result_callback(
